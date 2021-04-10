@@ -29,6 +29,11 @@ function waitForRS() {
     RS_DESIRED_COUNT=$2
 
     replica_count=`getReplicaCount ${RS_NAME}`
+    if [ ${RS_DESIRED_COUNT} = "0" ]
+    then
+        #Just handling a boundary 
+        return
+    fi
     while [ $replica_count != ${RS_DESIRED_COUNT} ] 
     do
         echo "Reday replicas of ${RS_NAME}:$replica_count"

@@ -1,35 +1,48 @@
 #!/bin/bash
 
-source rolling_strategy.sh
+source ../k8s_helper.sh
 
-kubectl apply -f rs1.yaml
-kubectl apply -f rs2.yaml
-kubectl apply -f service.yaml
+function startDeployment() {
+    apply_manifest ../rs1.yaml
+    apply_manifest ../rs2.yaml
+    waitForRS my-app-v1 5
+    apply_manifest ../service.yaml
+    replicaSetStatus
+}
 
-replica_count_v1=`kubectl get rs my-app-v1 -o json | jq '.status.readyReplicas'`
-while [ $replica_count_v1 != 5 ] 
+function recreateDeployment() {
+    rs1_replica_count=5
+    rs2_replica_count=0
+    while [[ $rs2_replica_count != "5" ]]
     do
-        echo "Ready replicas of Version 1 :    $replica_count_v1"
-        sleep 1s
-        replica_count_v1=`kubectl get rs my-app-v1 -o json | jq '.status.readyReplicas'`
+        rs1_replica_count=$((rs1_replica_count-1))
+        rs2_replica_count=$((rs2_replica_count+1))
+
+        setReplicaForRS my-app-v1 ${rs1_replica_count}
+        setReplicaForRS my-app-v2 ${rs2_replica_count}
+        waitForRS my-app-v2 ${rs2_replica_count}            
+        replicaSetStatus
     done
+}
 
-# Current ReplicaSet Host and Version Details
-service=$(minikube service my-app --url)
-version=$(curl "$service")
-echo "Current ReplicaSet host and version -------- $version"
+function rollback() {
+    rs1_replica_count=0
+    rs2_replica_count=5
+    while [[ $rs1_replica_count != "5" ]]
+    do
+        rs1_replica_count=$((rs1_replica_count+1))
+        rs2_replica_count=$((rs2_replica_count-1))
 
-# Scaling ReplicaSet
-echo -n " Do you want to scale Replica set select yes(y) or no(n) -->  "
-read option
-case $option in
-y)
-    scaleReplicas 
-;;
-n)
-    exit;
-;;
-*)
-    echo "Invalid option select y to yes and n to exit"
-;;
-esac
+        setReplicaForRS my-app-v1 ${rs1_replica_count}
+        setReplicaForRS my-app-v2 ${rs2_replica_count}
+        waitForRS my-app-v2 ${rs2_replica_count}            
+        replicaSetStatus
+    done
+}
+
+function cleanUp() {
+    deleteManifest ../rs1.yaml
+    deleteManifest ../rs2.yaml
+    deleteManifest ../service.yaml
+    replicaSetStatus
+}
