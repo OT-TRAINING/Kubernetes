@@ -1,23 +1,23 @@
 #!/bin/bash
 
 scaleReplicas(){
-    kubectl scale rs --replicas="$1" my-app
+    kubectl scale rs --replicas="$1" my-app-v1
     # jq needs to be installed through sudo apt install jq
-    replica_count=`kubectl get rs my-app -o json | jq '.status.readyReplicas'`
+    replica_count=`kubectl get rs my-app-v1 -o json | jq '.status.readyReplicas'`
     while [ $replica_count != 'null' ] 
         do
             sleep 1s
-            replica_count=`kubectl get rs my-app -o json | jq '.status.readyReplicas'`
+            replica_count=`kubectl get rs my-app-v1 -o json | jq '.status.readyReplicas'`
         done
     
     kubectl apply -f rs2.yaml
 
-    replica_count=`kubectl get rs my-app -o json | jq '.status.readyReplicas'`
+    replica_count=`kubectl get rs my-app-v2 -o json | jq '.status.readyReplicas'`
     while [ $replica_count != 5 ] 
         do
             echo "Ready Replicas of Version 2 :   $replica_count"
             sleep 1s
-            replica_count=`kubectl get rs my-app -o json | jq '.status.readyReplicas'`
+            replica_count=`kubectl get rs my-app-v2 -o json | jq '.status.readyReplicas'`
         done
 
     echo "Scaling of replicaset v1 to v2 completed"    
