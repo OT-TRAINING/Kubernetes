@@ -10,7 +10,7 @@ kubectl apply -f service.yaml
 replica_count=`kubectl get rs my-app-v1 -o json | jq '.status.readyReplicas'`
 while [ $replica_count != 5 ] 
     do
-        echo "Reday replicas of Version 1 :    $replica_count"
+        echo "Ready replicas of Version 1 :    $replica_count"
         sleep 1s
         replica_count=`kubectl get rs my-app-v1 -o json | jq '.status.readyReplicas'`
     done 
