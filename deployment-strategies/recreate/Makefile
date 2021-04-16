@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 initialSetup: 
 	source recreate.sh;startDeployment
 
