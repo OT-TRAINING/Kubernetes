@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 initialSetup: 
 	source rolling.sh;startDeployment
 
@@ -9,4 +11,3 @@ rollback:
 
 tearDown:
 	source rolling.sh;cleanUp
-
