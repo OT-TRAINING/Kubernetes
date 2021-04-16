@@ -2,19 +2,19 @@ test-pod.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: test
+  name: ms
 spec:
   selector:
     matchLabels:
-      app: test
+      app: ms
   replicas: 1
   template:
     metadata:
       labels:
-        app: test
+        app: ms
     spec:
       containers:
-      - name: test
+      - name: ms
         image: rachitsrivastava007/sleep:8
         ports:
         - containerPort: 80
