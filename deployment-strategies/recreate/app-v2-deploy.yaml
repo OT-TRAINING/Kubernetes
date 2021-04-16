@@ -1,19 +1,20 @@
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 metadata:
   name: my-app-v2
   labels:
     app: my-app
 spec:
-  # modify replicas according to your case
-  replicas: 5
+  replicas: 3
   selector:
     matchLabels:
-      app: my-app
+      app: my-app-team-z
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
-        app: my-app
+        app: my-app-team-z
         version: v2.0.0
       annotations:
         prometheus.io/scrape: "true"
@@ -41,4 +42,3 @@ spec:
             path: /ready
             port: probe
           periodSeconds: 5
-
