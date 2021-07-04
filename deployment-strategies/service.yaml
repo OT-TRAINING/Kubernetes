@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: my-app
   labels:
-    app: my-app
+    app: my-app-team-z
 spec:
   type: NodePort
   ports:
@@ -11,4 +11,4 @@ spec:
     port: 80
     targetPort: http
   selector:
-    app: my-app
+    app: my-app-team-z

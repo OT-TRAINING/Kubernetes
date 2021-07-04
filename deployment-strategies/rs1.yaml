@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
-  name: my-app-v2
+  name: my-app-v1
   labels:
     app: my-app
 spec:
@@ -9,13 +9,12 @@ spec:
   replicas: 5
   selector:
     matchLabels:
-      app: my-app-team-y
-      version: v2.0.0
+      app: my-app-team-z
   template:
     metadata:
       labels:
-        app: my-app-team-y
-        version: v2.0.0
+        app: my-app-team-z
+        version: v1.0.0
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9101"
@@ -23,6 +22,13 @@ spec:
       containers:
       - name: my-app
         image: containersol/k8s-deployment-strategies
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 50m
+            memory: 50Mi
         ports:
         - name: http
           containerPort: 8080
@@ -30,7 +36,7 @@ spec:
           containerPort: 8086
         env:
         - name: VERSION
-          value: v2.0.0
+          value: v1.0.0
         livenessProbe:
           httpGet:
             path: /live
